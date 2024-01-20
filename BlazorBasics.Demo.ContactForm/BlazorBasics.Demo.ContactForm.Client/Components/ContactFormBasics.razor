@@ -10,7 +10,7 @@
         <div class="field">
             <p class="label">Comments</p>
             <div class="control has-background-white has-text-black">
-                <RichTextEditorComponent OnSave="SaveComment" @ref="Editor" />
+                <RichTextEditorComponent OnSave="SaveComment" @ref="Editor"/>
             </div>
         </div>
 
@@ -45,7 +45,7 @@
                 <div class="buttons">
                     <CaptchaComponent class="button">
                         <BeforeValidate>
-                            <span class="button is-warning mr-2">Resuelve</span>
+                            <span class="button is-warning mr-2">Solve math</span>
                         </BeforeValidate>
                         <AfterValidate>
                             <button class="button is-primary" type="submit">Send</button>
