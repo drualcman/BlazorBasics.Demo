@@ -1,0 +1,81 @@
+﻿
+<EditForm class="container" Model="Data" OnValidSubmit=SendForm>
+    <div class="field">
+        <p class="label">Email</p>
+        <div class="control">
+            <InputText class="input" type="email" @bind-Value="Data.Email" />
+        </div>
+    </div>
+    <div class="field">
+        <p class="label">Comments</p>
+        <div class="control">
+            <InputTextArea class="textarea" @bind-Value="Data.Comments"></InputTextArea>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column">
+            <div class="file has-name">
+                <label class="file-label">
+                    <InputFile OnChange=GetFile class="file-input" />
+                    <span class="file-cta">
+                        <span class="file-icon">
+                            <i class="fas fa-upload"></i>
+                        </span>
+                        @if(string.IsNullOrEmpty(Data.FileName))
+                        {
+
+                            <span class="file-label">
+                                Choose a file…
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="file-label">
+                                File name
+                            </span>
+                        }
+                    </span>
+                    @if(!string.IsNullOrEmpty(Data.FileName))
+                    {
+                        <span class="file-name">
+                            @Data.FileName
+                        </span>
+                    }
+                </label>
+            </div>
+        </div>
+        <div class="column">
+            <div class="buttons">
+                <button class="button is-primary" type="submit">Send</button>
+                <button class="button" type="reset">Clean</button>
+            </div>
+        </div>
+    </div>
+    @if(!string.IsNullOrEmpty(Message))
+    {
+        <div class="message is-info">
+            <div class="message-body">
+                @Message
+            </div>
+        </div>
+    }
+</EditForm>
+
+@code {
+    string Message;
+    ContactFormModel Data = new();
+
+    void GetFile(InputFileChangeEventArgs file)
+    {
+        Data.FileName = file.File.Name;
+        Data.FileStream = file.File.OpenReadStream();
+    }
+
+    async Task SendForm()
+    {
+        Message = "Thanks!";
+        Data = new();
+        await Task.Delay(3000);
+        Message = string.Empty;
+    }
+}

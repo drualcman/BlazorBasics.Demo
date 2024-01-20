@@ -1,0 +1,135 @@
+﻿@if(IsLoad)
+{
+    <EditForm class="container" Model="Data" OnValidSubmit=SendForm>
+        <div class="field">
+            <p class="label">Email</p>
+            <div class="control">
+                <InputText class="input" type="email" @bind-Value="Data.Email" />
+            </div>
+        </div>
+        <div class="field">
+            <p class="label">Comments</p>
+            <div class="control has-background-white has-text-black">
+                <RichTextEditorComponent OnSave="SaveComment" @ref="Editor" />
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <div class="file">
+                    <InputFileComponent OnChange="GetFile" Parameters="InputParameters" class="file-label">
+                            <InputContent>
+                                <span class="file-cta">
+                                    <span class="file-icon">
+                                        <i class="fas fa-upload"></i>
+                                    </span>
+                                    <span class="file-label">
+                                        Choose a file…
+                                    </span>
+                                </span>
+                            </InputContent>
+                            <SelectContent Context="FilesCount">
+                            <span class="file-cta">
+                                <span class="file-label">
+                                    @FilesCount
+                                </span>
+                                <span class="file-icon">
+                                    <i class="fas fa-file"></i>
+                                </span>
+                            </span>
+                            </SelectContent>
+                        </InputFileComponent>
+                </div>
+            </div>
+            <div class="column">
+                <div class="buttons">
+                    <CaptchaComponent class="button">
+                        <BeforeValidate>
+                            <span class="button is-warning mr-2">Resuelve</span>
+                        </BeforeValidate>
+                        <AfterValidate>
+                            <button class="button is-primary" type="submit">Send</button>
+                        </AfterValidate>
+                    </CaptchaComponent>
+                    <button class="button is-danger" type="reset">Clean</button>
+                </div>
+            </div>
+        </div>
+
+        @if(!string.IsNullOrEmpty(Message))
+        {
+            <div class="message is-info">
+                <div class="message-body">
+                    @Message
+                </div>
+            </div>
+        }
+        @if(!string.IsNullOrEmpty(Data.Comments))
+        {
+            <div class="message is-info">
+                <div class="message-body">
+                    @Data.Comments
+                </div>
+            </div>
+        }
+    </EditForm>
+}
+else
+{
+    <span class="button is-loading"></span>
+}
+
+@code {
+    string Message;
+    ContactFormModel Data = new();
+    RichTextEditorComponent Editor;
+    InputFileComponent ManageInputFileComponent;
+    bool IsLoad;
+    BlazorBasics.InputFileExtended.ValueObjects.InputFileParameters InputParameters = new BlazorBasics.InputFileExtended.ValueObjects.InputFileParameters()
+        {
+            PreviewOptions = new InputFileExtended.ValueObjects.PreviewOptions
+            {
+              ShowPreview = false,
+              CanDeleteIfNotCallBack = true
+            },
+            AllowPasteFiles = true,
+            InputFileCss = "file-input",
+            DragAndDropOptions = new BlazorBasics.InputFileExtended.ValueObjects.DragAndDropOptions
+            {
+                CanDropFiles = false
+            }
+        };
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            IsLoad = firstRender;
+            StateHasChanged();
+        }
+    }
+
+    void GetFile(FilesUploadEventArgs file)
+    {
+        Data.FileName = file.Files[0].Name;
+        Data.FileStream = file.Files[0].FileStreamContent.ReadAsStream();
+    }
+
+    async Task GetContent() => await Editor.GetContent();
+
+    void SaveComment(string content) => Data.Comments = content;
+
+    async Task SendForm()
+    {
+        Message = "Thanks!";
+        Data = new();
+        await ResetMessage();
+    }
+
+    async Task ResetMessage()
+    {
+        await Task.Delay(3000);
+        Message = string.Empty;
+    }
+}
